@@ -51,7 +51,6 @@ class PengaturanPage extends StatelessWidget {
             ),
           ),
 
-          // Footer
           Container(
             color: Colors.blue[900],
             width: double.infinity,
@@ -68,7 +67,6 @@ class PengaturanPage extends StatelessWidget {
     );
   }
 
-  // Widget item printer
   Widget _printerItem(String idPrinter) {
     return ListTile(
       leading: const CircleAvatar(
@@ -85,7 +83,7 @@ class PengaturanPage extends StatelessWidget {
           ),
         ),
         onPressed: () {
-          // TODO: Logika sambungkan printer
+          //logika sambungkan ke printer yang tersedia
         },
         child: const Text(
           "Sambungkan",
