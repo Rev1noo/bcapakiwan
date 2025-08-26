@@ -13,22 +13,31 @@ class PengaturanPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue[900],
-        title: const Text(
-          "Pengaturan",
-          style: TextStyle(color: Colors.white),
-        ),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
           ),
-          onPressed: () {
-            Navigator.maybePop(context);
-          },
+          child: AppBar(
+            backgroundColor: const Color(0xFF1E4C92),
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            title: const Text(
+              "Transfer",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
         ),
       ),
+
+      // Bagian body
       body: Column(
         children: [
           Align(
@@ -50,23 +59,32 @@ class PengaturanPage extends StatelessWidget {
               ],
             ),
           ),
-
-          Container(
-            color: Colors.blue[900],
-            width: double.infinity,
-            padding: const EdgeInsets.all(8),
-            child: const Center(
-              child: Text(
-                "© Appdef 2729",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          )
         ],
+      ),
+
+      // Bagian bottomNavigationBar pindah ke sini
+      bottomNavigationBar: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          height: 50,
+          color: const Color(0xFF1E4C92),
+          alignment: Alignment.center,
+          child: const Text(
+            "© Appdef 2729",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
       ),
     );
   }
 
+  // Widget untuk item printer
   Widget _printerItem(String idPrinter) {
     return ListTile(
       leading: const CircleAvatar(
@@ -83,7 +101,7 @@ class PengaturanPage extends StatelessWidget {
           ),
         ),
         onPressed: () {
-          //logika sambungkan ke printer yang tersedia
+          // logika sambungkan ke printer
         },
         child: const Text(
           "Sambungkan",
