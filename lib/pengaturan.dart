@@ -30,7 +30,7 @@ class PengaturanPage extends StatelessWidget {
               },
             ),
             title: const Text(
-              "Transfer",
+              "Pengaturan",
               style: TextStyle(color: Colors.white),
             ),
           ),
