@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const transfer());
+  runApp(const TransferApp());
 }
 
-class transfer extends StatelessWidget {
-  const transfer({super.key});
+class TransferApp extends StatelessWidget {
+  const TransferApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: TransferPage(),
     );
@@ -42,6 +42,8 @@ class _TransferPageState extends State<TransferPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+
+      // 🔹 AppBar dengan corner radius bawah
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: ClipRRect(
@@ -65,6 +67,8 @@ class _TransferPageState extends State<TransferPage> {
           ),
         ),
       ),
+
+      // 🔹 Body konten
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: ListView(
@@ -199,33 +203,29 @@ class _TransferPageState extends State<TransferPage> {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Footer mirip AppBar
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                color: Color(0xFF1E4C92),
-                borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-                ),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
-              margin: const EdgeInsets.only(bottom: 0),
-              child: const Center(
-                child: Text(
-                "© Appdef 2729",
-                style: TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-              ),
-              ),
-            ),
           ],
         ),
       ),
+
+      // 🔹 Sticky Footer mirip AppBar
+      bottomNavigationBar: ClipRRect(
+  borderRadius: const BorderRadius.only(
+    topLeft: Radius.circular(20),
+    topRight: Radius.circular(20),
+  ),
+  child: Container(
+    height: 50, // kasih tinggi biar ga nutup full screen
+    color: const Color(0xFF1E4C92),
+    alignment: Alignment.center,
+    child: const Text(
+      "© Appdef 2729",
+      style: TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  ),
+),
     );
   }
 }
