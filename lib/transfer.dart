@@ -1,3 +1,4 @@
+import 'package:aplikasibca/pembayaran_berhasil.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -193,9 +194,24 @@ class _TransferPageState extends State<TransferPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF1E4C92),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24)),
+                    borderRadius: BorderRadius.circular(24),
+                  ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => TransferBerhasilPage(
+                        nominal: nominalController
+                            .text, 
+                        tanggal:
+                            "02 September 2025 10:00", 
+                        namaPenerima: penerimaController
+                            .text, 
+                      ),
+                    ),
+                  );
+                },
                 child: const Text(
                   "Kirim",
                   style: TextStyle(fontSize: 16, color: Colors.white),
@@ -209,23 +225,23 @@ class _TransferPageState extends State<TransferPage> {
 
       // 🔹 Sticky Footer mirip AppBar
       bottomNavigationBar: ClipRRect(
-  borderRadius: const BorderRadius.only(
-    topLeft: Radius.circular(20),
-    topRight: Radius.circular(20),
-  ),
-  child: Container(
-    height: 50, // kasih tinggi biar ga nutup full screen
-    color: const Color(0xFF1E4C92),
-    alignment: Alignment.center,
-    child: const Text(
-      "© Appdef 2729",
-      style: TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          height: 50, // kasih tinggi biar ga nutup full screen
+          color: const Color(0xFF1E4C92),
+          alignment: Alignment.center,
+          child: const Text(
+            "© Appdef 2729",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
       ),
-    ),
-  ),
-),
     );
   }
 }

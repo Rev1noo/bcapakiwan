@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       home: TransferBerhasilPage(
         nominal: 'IDR 100,000.00',
         tanggal: '29 Juli 2025 12:00',
-        namaPenerima: 'Afria Reva',
+        namaPenerima: 'Gracia',
       ),
     );
   }

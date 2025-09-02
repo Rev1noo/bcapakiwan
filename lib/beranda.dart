@@ -1,3 +1,4 @@
+import 'package:aplikasibca/informarsi.dart';
 import 'package:aplikasibca/pengaturan.dart';
 import 'package:aplikasibca/transfer.dart';
 import 'package:flutter/material.dart';
@@ -169,7 +170,7 @@ class HomePage extends StatelessWidget {
                   menuItem(Icons.info_outline, "Informasi", () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const AktifitasPage()),
+                      MaterialPageRoute(builder: (_) => const InformasiPage()),
                     );
                   }),
                   menuItem(Icons.settings, "Pengaturan", () {
