@@ -161,12 +161,7 @@ class HomePage extends StatelessWidget {
                       ),
                     );
                   }),
-                  menuItem(Icons.payment, "Pembayaran", () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const AktifitasPage()),
-                    );
-                  }),
+                  menuItem(Icons.payment, "Pembayaran", null ),
                   menuItem(Icons.info_outline, "Informasi", () {
                     Navigator.push(
                       context,
