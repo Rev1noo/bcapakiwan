@@ -29,14 +29,28 @@ class InformasiPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF1E40AF),
-        title: const Text("Informasi", style: TextStyle(color: Colors.white)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+      // 🔹 AppBar dengan corner radius bawah
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+          child: AppBar(
+            backgroundColor: const Color(0xFF1E4C92),
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            title: const Text(
+              "Informasi",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
         ),
       ),
       body: Column(
@@ -45,10 +59,10 @@ class InformasiPage extends StatelessWidget {
           const Text(
             "Kelompok",
             style: TextStyle(
-              fontFamily: 'Overpass', 
+              fontFamily: 'Overpass',
               fontWeight: FontWeight.bold,
               fontSize: 16,
-              color: Color(0xFF1E40AF), 
+              color: Color(0xFF1E40AF),
             ),
           ),
           const SizedBox(height: 10),
@@ -74,10 +88,10 @@ class InformasiPage extends StatelessWidget {
                         nama,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                          fontFamily: 'Overpass', 
-                          fontWeight: FontWeight.bold, 
+                          fontFamily: 'Overpass',
+                          fontWeight: FontWeight.bold,
                           fontSize: 14,
-                          color: Color(0xFF1E40AF), 
+                          color: Color(0xFF1E40AF),
                         ),
                       ),
                     ),
@@ -85,17 +99,25 @@ class InformasiPage extends StatelessWidget {
                   .toList(),
             ),
           ),
-          const Spacer(),
-          Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.all(8),
-            color: const Color(0xFF1E40AF),
-            child: const Text(
-              "© Appdef 2729",
-              style: TextStyle(color: Colors.white, fontSize: 12),
-            ),
-          )
         ],
+      ),
+      bottomNavigationBar: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          height: 50, // kasih tinggi biar ga nutup full screen
+          color: const Color(0xFF1E4C92),
+          alignment: Alignment.center,
+          child: const Text(
+            "© Appdef 2729",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
       ),
     );
   }

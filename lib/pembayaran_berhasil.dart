@@ -35,19 +35,28 @@ class TransferBerhasilPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF1E40AF),
-        title: const Text(
-          "AppDef",
-          style: TextStyle(color: Colors.white),
+     appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+          child: AppBar(
+            backgroundColor: const Color(0xFF1E4C92),
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            title: const Text(
+              "Transfer",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        centerTitle: true,
       ),
       body: Column(
         children: [
@@ -171,18 +180,27 @@ class TransferBerhasilPage extends StatelessWidget {
               ),
             ),
           ),
-          Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.all(8),
-            color: const Color(0xFF1E40AF),
-            child: const Text(
-              "© Appdef 2729",
-              style: TextStyle(color: Colors.white, fontSize: 12),
-            ),
-          ),
         ],
       ),
-      backgroundColor: Colors.grey[100],
+      // 🔹 Sticky Footer mirip AppBar
+      bottomNavigationBar: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          height: 50, // kasih tinggi biar ga nutup full screen
+          color: const Color(0xFF1E4C92),
+          alignment: Alignment.center,
+          child: const Text(
+            "© Appdef 2729",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
