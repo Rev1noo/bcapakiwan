@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'aktifitas.dart'; // Tambahkan ini
 
 void main() {
   runApp(const MyApp());
@@ -140,7 +141,10 @@ class HomePage extends StatelessWidget {
                   () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AktifitasPage()),
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            const AktifitasPage(), // <-- panggil class widget
+                      ),
                     );
                   },
                 ),
@@ -153,19 +157,26 @@ class HomePage extends StatelessWidget {
             ),
           ),
 
-          // Footer
-          Container(
-            padding: const EdgeInsets.all(8),
-            color: const Color(0xFF1E40AF),
-            child: const Center(
-              child: Text(
-                "© Appdef 2729",
-                style: TextStyle(color: Colors.white, fontSize: 12),
-              ),
-            ),
-          ),
         ],
       ),
+      bottomNavigationBar: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          height: 50,
+          color: const Color(0xFF1E4C92),
+          alignment: Alignment.center,
+          child: const Text(
+            "© Appdef 2729",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      )
     );
   }
 
@@ -183,22 +194,6 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 8),
           Text(title, style: const TextStyle(fontSize: 14)),
         ],
-      ),
-    );
-  }
-}
-
-class AktifitasPage extends StatelessWidget {
-  const AktifitasPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Aktifitas"),
-      ),
-      body: const Center(
-        child: Text("Halaman Aktifitas"),
       ),
     );
   }
