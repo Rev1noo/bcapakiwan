@@ -162,7 +162,7 @@ class HomePage extends StatelessWidget {
                       ),
                     );
                   }),
-                  menuItem(Icons.payment, "Pembayaran", () {
+                  menuItem(Icons.payment, "Saldo", () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const TambahSaldoPage()),
