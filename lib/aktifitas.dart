@@ -56,12 +56,12 @@ class AktifitasPage extends StatelessWidget {
                           textAlign: TextAlign.left),
                       SizedBox(height: 8),
                       Text("2025",
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 18ko),
                           textAlign: TextAlign.left),
                     ],
                   ),
                 ),
-                const SizedBox(width: 50), // Jarak antara kiri dan kanan
+                const SizedBox(width: 60), // Jarak antara kiri dan kanan
                 Expanded(
                   flex: 7, // Bagian kanan lebih besar
                   child: Column(

@@ -1,5 +1,6 @@
 import 'package:aplikasibca/informarsi.dart';
 import 'package:aplikasibca/pengaturan.dart';
+import 'package:aplikasibca/saldo.dart';
 import 'package:aplikasibca/transfer.dart';
 import 'package:flutter/material.dart';
 import 'aktifitas.dart'; // Tambahkan ini
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,  
+      debugShowCheckedModeBanner: false,
       home: const HomePage(),
     );
   }
@@ -161,10 +162,10 @@ class HomePage extends StatelessWidget {
                       ),
                     );
                   }),
-                  menuItem(Icons.payment, "Pembayaran", () {
+                  menuItem(Icons.payment, "Tambah Saldo", () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const AktifitasPage()),
+                      MaterialPageRoute(builder: (_) => const TambahSaldoPage()),
                     );
                   }),
                   menuItem(Icons.info_outline, "Informasi", () {
