@@ -10,24 +10,23 @@ class _TambahSaldoPageState extends State<TambahSaldoPage> {
   final TextEditingController _controller = TextEditingController();
   String? metodePembayaran;
 
-  int? _selectedNominal; // ✅ simpan tombol yang dipilih
+  int? _selectedNominal;
 
   void _pilihCepat(int nominal) {
     setState(() {
       _controller.text = nominal.toString();
-      _selectedNominal = nominal; // tandai nominal yang dipilih
+      _selectedNominal = nominal;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    // ✅ kalau user ngetik manual, reset pilihan cepat
     _controller.addListener(() {
       final input = int.tryParse(_controller.text);
       if (input != _selectedNominal) {
         setState(() {
-          _selectedNominal = null; // reset pilihan cepat
+          _selectedNominal = null; 
         });
       }
     });
@@ -111,7 +110,7 @@ class _TambahSaldoPageState extends State<TambahSaldoPage> {
                 onPressed: () {
                   final input = int.tryParse(_controller.text);
                   if (input != null && input > 0) {
-                    Navigator.pop(context, input); // ✅ bisa manual & cepat
+                    Navigator.pop(context, input);
                   }
                 },
                 child: const Text("Tambah Saldo",
@@ -143,7 +142,7 @@ class _TambahSaldoPageState extends State<TambahSaldoPage> {
   }
 
   Widget _quickButton(String label, int nominal) {
-    final bool isSelected = _selectedNominal == nominal; // ✅ cek apakah dipilih
+    final bool isSelected = _selectedNominal == nominal;
 
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
