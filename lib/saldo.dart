@@ -111,6 +111,7 @@ class _TambahSaldoPageState extends State<TambahSaldoPage> {
                   final input = int.tryParse(_controller.text);
                   if (input != null && input > 0) {
                     Navigator.pop(context, input);
+                    Navigator.pop(context, input); 
                   }
                 },
                 child: const Text("Tambah Saldo",
