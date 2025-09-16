@@ -56,7 +56,7 @@ class AktifitasPage extends StatelessWidget {
                           textAlign: TextAlign.left),
                       SizedBox(height: 8),
                       Text("2025",
-                          style: TextStyle(fontSize: 18ko),
+                          style: TextStyle(fontSize: 18),
                           textAlign: TextAlign.left),
                     ],
                   ),
