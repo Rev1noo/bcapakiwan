@@ -1,49 +1,49 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+class TambahSaldoPage extends StatefulWidget {
+  const TambahSaldoPage({super.key});
+  @override
+  State<TambahSaldoPage> createState() => _TambahSaldoPageState();
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class _TambahSaldoPageState extends State<TambahSaldoPage> {
+  final TextEditingController _controller = TextEditingController();
+  String? metodePembayaran;
+
+  int? _selectedNominal; // ✅ simpan tombol yang dipilih
+
+  void _pilihCepat(int nominal) {
+    setState(() {
+      _controller.text = nominal.toString();
+      _selectedNominal = nominal; // tandai nominal yang dipilih
+    });
+  }
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const TambahSaldoPage(),
-    );
+  void initState() {
+    super.initState();
+    // ✅ kalau user ngetik manual, reset pilihan cepat
+    _controller.addListener(() {
+      final input = int.tryParse(_controller.text);
+      if (input != _selectedNominal) {
+        setState(() {
+          _selectedNominal = null; // reset pilihan cepat
+        });
+      }
+    });
   }
-}
-
-class TambahSaldoPage extends StatelessWidget {
-  const TambahSaldoPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-          ),
-          child: AppBar(
-            backgroundColor: const Color(0xFF1E4C92),
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            title: const Text(
-              "Pengaturan",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF1E4C92),
+        title:
+            const Text("Tambah Saldo", style: TextStyle(color: Colors.white)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Padding(
@@ -51,16 +51,10 @@ class TambahSaldoPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Input Nominal
-            const Text(
-              "Nominal",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1E3C88),
-              ),
-            ),
+            const Text("Nominal", style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             TextField(
+              controller: _controller,
               decoration: InputDecoration(
                 hintText: "Masukkan Nominal",
                 filled: true,
@@ -73,69 +67,37 @@ class TambahSaldoPage extends StatelessWidget {
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 20),
-
-            // Pilihan Cepat
-            const Text(
-              "Pilihan Cepat",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1E3C88),
-              ),
-            ),
+            const Text("Pilihan Cepat",
+                style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                _quickButton("Rp10.000"),
+                _quickButton("Rp10.000", 10000),
                 const SizedBox(width: 8),
-                _quickButton("Rp50.000"),
+                _quickButton("Rp50.000", 50000),
                 const SizedBox(width: 8),
-                _quickButton("Rp100.000"),
+                _quickButton("Rp100.000", 100000),
               ],
             ),
             const SizedBox(height: 20),
-            const Text(
-              "Metode Pembayaran",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1E3C88),
-              ),
-            ),
+            const Text("Metode Pembayaran",
+                style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.grey.shade300,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               ),
               hint: const Text("Pilih Metode Pembayaran"),
               items: const [
+                DropdownMenuItem(value: "Cash", child: Text("Cash")),
                 DropdownMenuItem(
-                  value: "Cash",
-                  child: Text("Cash"),
-                ),
-                DropdownMenuItem(
-                  value: "Transfer Bank",
-                  child: Text("Transfer Bank"),
-                ),
-                DropdownMenuItem(
-                  value: "E-Wallet",
-                  child: Text("E-Wallet"),
-                ),
+                    value: "Transfer Bank", child: Text("Transfer Bank")),
+                DropdownMenuItem(value: "E-Wallet", child: Text("E-Wallet")),
               ],
-              onChanged: (value) {
-                // aksi saat dipilih
-                print("Metode dipilih: $value");
-              },
+              onChanged: (value) => metodePembayaran = value,
             ),
-            const SizedBox(height: 30),
-
-            // Tombol Tambah Saldo
+            const Spacer(),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -146,21 +108,19 @@ class TambahSaldoPage extends StatelessWidget {
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                onPressed: () {},
-                child: const Text(
-                  "Tambah Saldo",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                onPressed: () {
+                  final input = int.tryParse(_controller.text);
+                  if (input != null && input > 0) {
+                    Navigator.pop(context, input); // ✅ bisa manual & cepat
+                  }
+                },
+                child: const Text("Tambah Saldo",
+                    style: TextStyle(color: Colors.white)),
               ),
             ),
           ],
         ),
       ),
-
-      // Footer
       bottomNavigationBar: ClipRRect(
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -182,19 +142,23 @@ class TambahSaldoPage extends StatelessWidget {
     );
   }
 
-  // Widget tombol cepat
-  Widget _quickButton(String label) {
+  Widget _quickButton(String label, int nominal) {
+    final bool isSelected = _selectedNominal == nominal; // ✅ cek apakah dipilih
+
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
+        backgroundColor: isSelected ? const Color(0xFF1E3C88) : Colors.white,
         side: const BorderSide(color: Color(0xFF1E3C88)),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
       ),
-      onPressed: () {},
+      onPressed: () => _pilihCepat(nominal),
       child: Text(
         label,
-        style: const TextStyle(color: Color(0xFF1E3C88)),
+        style: TextStyle(
+          color: isSelected ? Colors.white : const Color(0xFF1E3C88),
+        ),
       ),
     );
   }
