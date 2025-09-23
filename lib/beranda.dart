@@ -168,11 +168,19 @@ class _HomePageState extends State<HomePage> {
                     MaterialPageRoute(builder: (_) => const AktifitasPage()),
                   );
                 }),
-                menuItem(Icons.compare_arrows, "Transfer", () {
-                  Navigator.push(
+                menuItem(Icons.compare_arrows, "Transfer", () async {
+                  final hasilTransfer = await Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const TransferPage()),
+                    MaterialPageRoute(
+                        builder: (_) =>
+                            TransferPage(saldo: nominal)), // ✅ kirim saldo
                   );
+
+                  if (hasilTransfer != null && hasilTransfer is int) {
+                    setState(() {
+                      nominal -= hasilTransfer;
+                    });
+                  }
                 }),
                 menuItem(Icons.payment, "Tambah Saldo", _tambahSaldo),
                 menuItem(Icons.info_outline, "Informasi", () {

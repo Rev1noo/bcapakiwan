@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
         nominal: 'IDR 100,000.00',
         tanggal: '29 Juli 2025 12:00',
         namaPenerima: 'Gracia',
+        catatan: 'Pembayaran tagihan listrik',
       ),
     );
   }
@@ -24,18 +25,20 @@ class TransferBerhasilPage extends StatelessWidget {
   final String nominal;
   final String tanggal;
   final String namaPenerima;
+  final String catatan; // ✅ tambah field catatan
 
   const TransferBerhasilPage({
     super.key,
     required this.nominal,
     required this.tanggal,
     required this.namaPenerima,
+    required this.catatan, // ✅ wajib isi catatan
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     appBar: PreferredSize(
+      appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: ClipRRect(
           borderRadius: const BorderRadius.only(
@@ -62,26 +65,25 @@ class TransferBerhasilPage extends StatelessWidget {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start, // Ubah dari center ke start
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
                     child: Container(
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: Colors.white, // Isi lingkaran putih
+                        color: Colors.white,
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: Color(0xFF1E40AF), // Pinggir biru
+                          color: const Color(0xFF1E40AF),
                           width: 4,
                         ),
                       ),
                       child: const Icon(
                         Icons.check,
-                        color: Color(0xFF1E40AF), // Centang biru
+                        color: Color(0xFF1E40AF),
                         size: 50,
                       ),
                     ),
@@ -145,14 +147,27 @@ class TransferBerhasilPage extends StatelessWidget {
                   const SizedBox(height: 10),
                   InfoRow(label: 'Tanggal Transaksi', value: tanggal),
                   const InfoRow(
-                      label: 'No. BCA Virtual Account',
-                      value: '451651151519009840'),
+                    label: 'No. BCA Virtual Account',
+                    value: '451651151519009840',
+                  ),
                   InfoRow(label: 'Nama Penerima', value: namaPenerima),
-                  const InfoRow(label: 'Dari Rekening', value: '624651005561692268'),
-                  InfoRow(label: 'Nominal Bayar', value: nominal),
-                  const InfoRow(label: 'Total Bayar', value: 'IDR 100,000.00'),
                   const InfoRow(
-                      label: 'Kode Referal', value: 'TBK745-SDBF74-51RJK2-AAH2'),
+                    label: 'Dari Rekening',
+                    value: '624651005561692268',
+                  ),
+                  InfoRow(label: 'Nominal Bayar', value: nominal),
+                  const InfoRow(
+                    label: 'Total Bayar',
+                    value: 'IDR 100,000.00',
+                  ),
+                  InfoRow(
+                    label: 'Catatan',
+                    value: catatan.isEmpty ? '-' : catatan,
+                  ), // ✅ tampilkan catatan
+                  const InfoRow(
+                    label: 'Kode Referal',
+                    value: 'TBK745-SDBF74-51RJK2-AAH2',
+                  ),
                   const SizedBox(height: 30),
                   SizedBox(
                     width: double.infinity,
@@ -189,7 +204,7 @@ class TransferBerhasilPage extends StatelessWidget {
           topRight: Radius.circular(20),
         ),
         child: Container(
-          height: 50, // kasih tinggi biar ga nutup full screen
+          height: 50,
           color: const Color(0xFF1E4C92),
           alignment: Alignment.center,
           child: const Text(
@@ -204,6 +219,7 @@ class TransferBerhasilPage extends StatelessWidget {
     );
   }
 }
+
 
 class InfoRow extends StatelessWidget {
   final String label;
@@ -223,7 +239,7 @@ class InfoRow extends StatelessWidget {
             style: const TextStyle(
               fontFamily: 'Overpass',
               fontWeight: FontWeight.w600,
-              color: Colors.black, // Ubah dari Color(0xFF1E40AF) ke Colors.black
+              color: Colors.black,
             ),
           ),
           const SizedBox(height: 4),

@@ -1,91 +1,103 @@
 import 'package:flutter/material.dart';
 
-class AktifitasPage extends StatelessWidget {
-  const AktifitasPage({super.key});
+class AktifitasPage extends StatefulWidget {
+  final List<Map<String, String>> transaksiList;
 
+  const AktifitasPage({super.key, required this.transaksiList});
+
+  @override
+  State<AktifitasPage> createState() => _AktifitasPageState();
+}
+
+class _AktifitasPageState extends State<AktifitasPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E40AF), // biru tua
-        iconTheme:
-            const IconThemeData(color: Colors.white), // tombol kembali putih
+        backgroundColor: const Color(0xFF1E40AF),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           "Aktifitas",
-          style: TextStyle(
-            color: Colors.white, // warna putih pada tulisan
-          ),
+          style: TextStyle(color: Colors.white),
         ),
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.only(left: 50),
-            child: const Align(
-              alignment: Alignment.centerLeft,
+      body: widget.transaksiList.isEmpty
+          ? const Center(
               child: Text(
-                "Jul",
-                style: TextStyle(
-                  fontSize: 16,
-                ),
+                "Belum ada aktifitas",
+                style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  flex: 1, // Bagian kiri lebih kecil
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text("24",
-                          style: TextStyle(fontSize: 20),
-                          textAlign: TextAlign.left),
-                      SizedBox(height: 8),
-                      Text("Juli",
-                          style: TextStyle(fontSize: 16),
-                          textAlign: TextAlign.left),
-                      SizedBox(height: 8),
-                      Text("2025",
-                          style: TextStyle(fontSize: 18),
-                          textAlign: TextAlign.left),
+            )
+          : ListView.builder(
+              itemCount: widget.transaksiList.length,
+              itemBuilder: (context, index) {
+                final data = widget.transaksiList[index];
+
+                // Pecah tanggal (contoh: "24 Juli 2025")
+                final pecahTanggal = data["tanggal"]!.split(" ");
+                String hari = pecahTanggal[0];
+                String bulan = pecahTanggal[1];
+                String tahun = pecahTanggal[2];
+
+                return Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      // Bagian kiri → tanggal
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(hari, style: const TextStyle(fontSize: 20)),
+                            Text(bulan, style: const TextStyle(fontSize: 16)),
+                            Text(tahun, style: const TextStyle(fontSize: 18)),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 40),
+                      // Bagian kanan → detail transaksi
+                      Expanded(
+                        flex: 5,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Kalau ada judul (contoh: Tambah Saldo), tampilkan
+                            if (data["judul"] != null)
+                              Text(
+                                data["judul"]!,
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                            if (data["namaPenerima"] != null)
+                              Text(data["namaPenerima"]!,
+                                  style: const TextStyle(fontSize: 16)),
+                            Text(data["nominal"]!,
+                                style: const TextStyle(fontSize: 16)),
+                            Text(
+                              data["status"]!,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: data["status"] == "Berhasil"
+                                    ? Colors.green
+                                    : Colors.red,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
-                ),
-                const SizedBox(width: 60),
-                Expanded(
-                  flex: 7,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text("Bintang Ramadhani",
-                          style: TextStyle(fontSize: 16),
-                          textAlign: TextAlign.left),
-                      SizedBox(height: 8),
-                      Text("IDR. 1.000.000",
-                          style: TextStyle(fontSize: 16),
-                          textAlign: TextAlign.left),
-                      SizedBox(height: 8),
-                      Text("Berhasil",
-                          style: TextStyle(fontSize: 16),
-                          textAlign: TextAlign.left),
-                    ],
-                  ),
-                ),
-              ],
+                );
+              },
             ),
-          ),
-        ],
-      ),
     );
   }
 }
