@@ -23,17 +23,12 @@ class _AktifitasPageState extends State<AktifitasPage> {
       ),
       body: widget.transaksiList.isEmpty
           ? const Center(
-              child: Text(
-                "Belum ada aktifitas",
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-            )
+              child: Text("Belum ada aktifitas",
+                  style: TextStyle(fontSize: 16, color: Colors.grey)))
           : ListView.builder(
               itemCount: widget.transaksiList.length,
               itemBuilder: (context, index) {
                 final data = widget.transaksiList[index];
-
-                // Pecah tanggal (contoh: "24 Juli 2025")
                 final pecahTanggal = data["tanggal"]!.split(" ");
                 String hari = pecahTanggal[0];
                 String bulan = pecahTanggal[1];
@@ -50,7 +45,6 @@ class _AktifitasPageState extends State<AktifitasPage> {
                   ),
                   child: Row(
                     children: [
-                      // Bagian kiri → tanggal
                       Expanded(
                         flex: 2,
                         child: Column(
@@ -63,19 +57,16 @@ class _AktifitasPageState extends State<AktifitasPage> {
                         ),
                       ),
                       const SizedBox(width: 40),
-                      // Bagian kanan → detail transaksi
                       Expanded(
                         flex: 5,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Kalau ada judul (contoh: Tambah Saldo), tampilkan
                             if (data["judul"] != null)
-                              Text(
-                                data["judul"]!,
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
+                              Text(data["judul"]!,
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)),
                             if (data["namaPenerima"] != null)
                               Text(data["namaPenerima"]!,
                                   style: const TextStyle(fontSize: 16)),

@@ -17,6 +17,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        scaffoldBackgroundColor: const Color(0xFFF5F7FA),
+        fontFamily: 'Roboto',
+      ),
       home: const HomePage(),
     );
   }
@@ -31,6 +35,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int nominal = 2000000;
+  List<Map<String, String>> riwayatTransaksi = [];
 
   String formatRupiah(int number) {
     final formatCurrency = NumberFormat.currency(
@@ -41,7 +46,6 @@ class _HomePageState extends State<HomePage> {
     return formatCurrency.format(number);
   }
 
-  // Fungsi untuk tambah saldo
   void _tambahSaldo() async {
     final hasil = await Navigator.push(
       context,
@@ -50,7 +54,13 @@ class _HomePageState extends State<HomePage> {
 
     if (hasil != null && hasil is int) {
       setState(() {
-        nominal += hasil; // ✅ saldo ditambah
+        nominal += hasil;
+        riwayatTransaksi.insert(0, {
+          "judul": "Tambah Saldo",
+          "nominal": "+ ${formatRupiah(hasil)}",
+          "status": "Berhasil",
+          "tanggal": DateFormat('dd MMMM yyyy').format(DateTime.now()),
+        });
       });
     }
   }
@@ -58,145 +68,145 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F7FA),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: const Color(0xFF007BFF),
+        titleSpacing: 16,
+        toolbarHeight: 80,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Text(
+              "Hello, User",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            ),
+            Text(
+              "3140172323",
+              style: TextStyle(fontSize: 14, color: Colors.white70),
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.notifications_none, color: Colors.white),
+          )
+        ],
+      ),
       body: Column(
         children: [
-          // Header
+          // ---------- Card Saldo ----------
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
-              color: Color(0xFF1E40AF),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
-              ),
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12.withOpacity(0.08),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            child: SafeArea(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: const [
+                    Text(
+                      "Saldo Anda",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    Icon(Icons.remove_red_eye, color: Colors.grey, size: 20),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  formatRupiah(nominal),
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ---------- Grid Menu ----------
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              child: GridView.count(
+                crossAxisCount: 3,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 20,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "AppDef",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  menuItem(Icons.history_rounded, "Aktifitas", () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            AktifitasPage(transaksiList: riwayatTransaksi),
                       ),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon:
-                                const Icon(Icons.settings, color: Colors.white),
-                            onPressed: () {},
-                          ),
-                          const SizedBox(width: 12),
-                          IconButton(
-                            icon: const Icon(Icons.notifications,
-                                color: Colors.white),
-                            onPressed: () {},
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "Halo, Ananda Irvan Revino Putra",
-                    style: TextStyle(color: Colors.white, fontSize: 14),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.all(16),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Rekening: 123 - 456 - 7890",
-                          style: TextStyle(fontSize: 12, color: Colors.black54),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          "Saldo Aktif",
-                          style: TextStyle(fontSize: 14, color: Colors.black54),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${formatRupiah(nominal)}',
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                    );
+                  }),
+                  menuItem(Icons.swap_horiz_rounded, "Transfer", () async {
+                    final hasilTransfer = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => TransferPage(saldo: nominal)),
+                    );
+
+                    if (hasilTransfer != null && hasilTransfer is int) {
+                      setState(() {
+                        nominal -= hasilTransfer;
+                        riwayatTransaksi.insert(0, {
+                          "judul": "Transfer",
+                          "namaPenerima": "Gracia",
+                          "nominal": "- ${formatRupiah(hasilTransfer)}",
+                          "status": "Berhasil",
+                          "tanggal": DateFormat('dd MMMM yyyy')
+                              .format(DateTime.now()),
+                        });
+                      });
+                    }
+                  }),
+                  menuItem(Icons.account_balance_wallet, "Tambah Saldo", _tambahSaldo),
+                  menuItem(Icons.info_outline_rounded, "Informasi", () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const InformasiPage()),
+                    );
+                  }),
+                  menuItem(Icons.settings, "Pengaturan", () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const PengaturanPage()),
+                    );
+                  }),
+                  menuItem(Icons.more_horiz, "Lainnya", null),
                 ],
               ),
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          const Text(
-            "Menu Utama",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: 3,
-              padding: const EdgeInsets.all(20),
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              children: [
-                menuItem(Icons.camera_alt, "Aktifitas", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const AktifitasPage()),
-                  );
-                }),
-                menuItem(Icons.compare_arrows, "Transfer", () async {
-                  final hasilTransfer = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) =>
-                            TransferPage(saldo: nominal)), // ✅ kirim saldo
-                  );
-
-                  if (hasilTransfer != null && hasilTransfer is int) {
-                    setState(() {
-                      nominal -= hasilTransfer;
-                    });
-                  }
-                }),
-                menuItem(Icons.payment, "Tambah Saldo", _tambahSaldo),
-                menuItem(Icons.info_outline, "Informasi", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const InformasiPage()),
-                  );
-                }),
-                menuItem(Icons.settings, "Pengaturan", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const PengaturanPage()),
-                  );
-                }),
-                menuItem(Icons.more_horiz, "Lainnya", null),
-              ],
             ),
           ),
         ],
@@ -207,8 +217,8 @@ class _HomePageState extends State<HomePage> {
           topRight: Radius.circular(20),
         ),
         child: Container(
-          height: 50,
-          color: const Color(0xFF1E4C92),
+          height: 55,
+          color: const Color(0xFF007BFF),
           alignment: Alignment.center,
           child: const Text(
             "© Appdef 2729",
@@ -225,16 +235,28 @@ class _HomePageState extends State<HomePage> {
   Widget menuItem(IconData icon, String title, VoidCallback? onTap) {
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: Colors.grey[200],
-            child: Icon(icon, size: 28, color: Colors.black54),
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: const Color(0xFFEAF3FF),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 28, color: const Color(0xFF007BFF)),
           ),
           const SizedBox(height: 8),
-          Text(title, style: const TextStyle(fontSize: 14)),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
+          ),
         ],
       ),
     );
