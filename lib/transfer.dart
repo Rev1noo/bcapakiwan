@@ -51,7 +51,7 @@ class _TransferPageState extends State<TransferPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF1F5BA3),
-        title: const Text('Transfer'),
+        title: const Text('Transfer', style: TextStyle(color: Colors.white)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(18),
@@ -102,7 +102,7 @@ class _TransferPageState extends State<TransferPage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
                 ),
-                child: const Text('Kirim'),
+                child: const Text('Kirim', style: TextStyle(fontSize: 16, color: Colors.white)),
               ),
             ],
           ),

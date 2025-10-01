@@ -1,3 +1,4 @@
+import 'package:aplikasibca/saldo.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'transfer.dart';
@@ -129,13 +130,32 @@ class _HomePageState extends State<HomePage> {
                         "nominal":
                             "- ${formatRupiah(hasilTransfer["nominal"])}",
                         "status": "Berhasil",
-                        "tanggal": DateFormat('dd MMM yyyy')
-                            .format(DateTime.now()),
+                        "tanggal":
+                            DateFormat('dd MMM yyyy').format(DateTime.now()),
                       });
                     });
                   }
                 }),
-                menuItem(Icons.payment, "Pembayaran", () {}),
+                menuItem(Icons.payment, "Pembayaran", () async {
+                  final hasilTambahSaldo = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const TambahSaldoPage()),
+                  );
+
+                  if (hasilTambahSaldo != null && hasilTambahSaldo is int) {
+                    setState(() {
+                      saldo += hasilTambahSaldo; 
+                      riwayatTransaksi.insert(0, {
+                        "judul": "Tambah Saldo",
+                        "namaPenerima": "Top Up",
+                        "nominal": "+ ${formatRupiah(hasilTambahSaldo)}",
+                        "status": "Berhasil",
+                        "tanggal":
+                            DateFormat('dd MMM yyyy').format(DateTime.now()),
+                      });
+                    });
+                  }
+                }),
                 menuItem(Icons.info_outline, "Informasi", () {
                   Navigator.push(
                     context,
