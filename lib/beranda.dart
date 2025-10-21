@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'transfer.dart';
+import 'package:aplikasibca/transfer.dart';
+import 'package:aplikasibca/pembayaran_berhasil.dart';
 import 'aktifitas.dart';
 import 'informarsi.dart';
 import 'pengaturan.dart';
@@ -120,8 +121,7 @@ class _HomePageState extends State<HomePage> {
                       riwayatTransaksi.insert(0, {
                         "judul": "Transfer",
                         "namaPenerima": hasilTransfer.namaPenerima,
-                        "nominal":
-                            "- ${formatRupiah(hasilTransfer.nominal)}",
+                        "nominal": "- ${formatRupiah(hasilTransfer.nominal)}",
                         "status": "Berhasil",
                         "tanggal": DateFormat('dd MMM yyyy')
                             .format(hasilTransfer.tanggal),
