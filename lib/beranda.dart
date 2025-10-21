@@ -1,10 +1,9 @@
+import 'package:aplikasibca/saldo.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:aplikasibca/transfer.dart';
 import 'package:aplikasibca/pembayaran_berhasil.dart';
+import 'package:aplikasibca/transfer.dart';
 import 'aktifitas.dart';
-import 'informarsi.dart';
-import 'pengaturan.dart';
 
 void main() {
   runApp(const MyApp());
@@ -129,7 +128,12 @@ class _HomePageState extends State<HomePage> {
                     });
                   }
                 }),
-                menuItem(Icons.payment, "Pembayaran", () async {}),
+                menuItem(Icons.payment, "Tambah Saldo", () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const TambahSaldoPage()),
+                  );
+                }),
                 menuItem(Icons.info_outline, "Informasi", () {}),
                 menuItem(Icons.settings, "Pengaturan", () {}),
                 menuItem(Icons.more_horiz, "Lainnya", () {}),

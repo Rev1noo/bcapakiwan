@@ -1,3 +1,4 @@
+import 'package:aplikasibca/main.dart';
 import 'package:flutter/material.dart';
 
 // ✅ Data transfer dikirim dari halaman Transfer
@@ -42,7 +43,8 @@ class _HalamanTransferBerhasilState extends State<HalamanTransferBerhasil> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        automaticallyImplyLeading: false, // supaya tidak ada tombol back default
+        automaticallyImplyLeading:
+            false, // supaya tidak ada tombol back default
         backgroundColor: const Color(0xFF1F5BA3),
         title: const Text(
           "Transfer Berhasil",
@@ -90,8 +92,14 @@ class _HalamanTransferBerhasilState extends State<HalamanTransferBerhasil> {
             // ✅ Tombol kembali ke halaman utama
             ElevatedButton(
               onPressed: () {
-                // kirim balik nominal ke halaman sebelumnya
-                Navigator.pop(context, transferData);
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        const MyHomePage(), // ✅ pakai HomePage, bukan BerandaPage
+                  ),
+                  (route) => false, // hapus semua halaman sebelumnya
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF1F5BA3),
@@ -122,8 +130,8 @@ class _HalamanTransferBerhasilState extends State<HalamanTransferBerhasil> {
           Text(label,
               style: const TextStyle(fontSize: 16, color: Colors.black54)),
           Text(value,
-              style: const TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.bold)),
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         ],
       ),
     );
