@@ -1,22 +1,30 @@
+import 'package:aplikasibca/pembayaran_berhasil.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class TransferPage extends StatefulWidget {
-  final int saldo;
+  final int saldoAwal;
 
-  const TransferPage({super.key, required this.saldo});
+  const TransferPage({super.key, required this.saldoAwal});
 
   @override
   State<TransferPage> createState() => _TransferPageState();
 }
 
 class _TransferPageState extends State<TransferPage> {
-  final _formKey = GlobalKey<FormState>();
+  late int saldo;
 
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController rekeningController = TextEditingController();
   final TextEditingController namaPenerimaController = TextEditingController();
   final TextEditingController nominalController = TextEditingController();
   final TextEditingController catatanController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    saldo = widget.saldoAwal;
+  }
 
   @override
   void dispose() {
@@ -27,22 +35,36 @@ class _TransferPageState extends State<TransferPage> {
     super.dispose();
   }
 
-  void _kirim() {
+  void _kirim() async {
     if (_formKey.currentState!.validate()) {
       final nominal = int.parse(nominalController.text);
 
-      if (nominal > widget.saldo) {
+      if (nominal > saldo) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Saldo tidak mencukupi!")),
         );
         return;
       }
 
-      Navigator.pop(context, {
-        "penerima": namaPenerimaController.text,
-        "nominal": nominal,
-        "catatan": catatanController.text,
-      });
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => HalamanTransferBerhasil(
+            data: TransferData(
+              rekeningTujuan: rekeningController.text,
+              namaPenerima: namaPenerimaController.text,
+              nominal: nominal,
+              catatan: catatanController.text,
+              tanggal: DateTime.now(),
+            ),
+          ),
+        ),
+      );
+      if (result != null) {
+        setState(() {
+          saldo -= nominal;
+        });
+      }
     }
   }
 
@@ -59,6 +81,8 @@ class _TransferPageState extends State<TransferPage> {
           key: _formKey,
           child: Column(
             children: [
+              Text("Saldo saat ini: Rp $saldo"),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: rekeningController,
                 keyboardType: TextInputType.number,
@@ -78,16 +102,14 @@ class _TransferPageState extends State<TransferPage> {
               TextFormField(
                 controller: namaPenerimaController,
                 decoration: const InputDecoration(labelText: 'Nama Penerima'),
-                validator: (v) =>
-                    v == null || v.isEmpty ? 'Wajib diisi' : null,
+                validator: (v) => v == null || v.isEmpty ? 'Wajib diisi' : null,
               ),
               TextFormField(
                 controller: nominalController,
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(labelText: 'Nominal'),
-                validator: (v) =>
-                    v == null || v.isEmpty ? 'Wajib diisi' : null,
+                validator: (v) => v == null || v.isEmpty ? 'Wajib diisi' : null,
               ),
               TextFormField(
                 controller: catatanController,
@@ -99,10 +121,9 @@ class _TransferPageState extends State<TransferPage> {
                 onPressed: _kirim,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF1F5BA3),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
+                  foregroundColor: Colors.white,
                 ),
-                child: const Text('Kirim', style: TextStyle(fontSize: 16, color: Colors.white)),
+                child: const Text("Kirim"),
               ),
             ],
           ),

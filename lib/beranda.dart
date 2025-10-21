@@ -1,4 +1,3 @@
-import 'package:aplikasibca/saldo.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'transfer.dart';
@@ -52,8 +51,6 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: [
           const SizedBox(height: 50),
-
-          // Nama pengguna & No rekening
           const Text(
             "Jane Doe",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -63,10 +60,7 @@ class _HomePageState extends State<HomePage> {
             "Rekening: 123 - 456 - 7890",
             style: TextStyle(color: Colors.black54),
           ),
-
           const SizedBox(height: 20),
-
-          // ---------- Kotak Saldo ----------
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 20),
             padding: const EdgeInsets.all(20),
@@ -93,10 +87,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-
           const SizedBox(height: 30),
-
-          // ---------- Menu ----------
           Expanded(
             child: GridView.count(
               crossAxisCount: 3,
@@ -114,68 +105,39 @@ class _HomePageState extends State<HomePage> {
                   );
                 }),
                 menuItem(Icons.swap_horiz, "Transfer", () async {
-                  final hasilTransfer = await Navigator.push(
+                  final Object? result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => TransferPage(saldo: saldo),
+                      builder: (_) => TransferPage(saldoAwal: saldo),
                     ),
                   );
 
-                  if (hasilTransfer != null && hasilTransfer is Map) {
+                  // ✅ perbaikan: cast hasil ke TransferData
+                  if (result != null && result is TransferData) {
+                    final TransferData hasilTransfer = result;
                     setState(() {
-                      saldo -= hasilTransfer["nominal"] as int;
+                      saldo -= hasilTransfer.nominal;
                       riwayatTransaksi.insert(0, {
                         "judul": "Transfer",
-                        "namaPenerima": hasilTransfer["penerima"],
+                        "namaPenerima": hasilTransfer.namaPenerima,
                         "nominal":
-                            "- ${formatRupiah(hasilTransfer["nominal"])}",
+                            "- ${formatRupiah(hasilTransfer.nominal)}",
                         "status": "Berhasil",
-                        "tanggal":
-                            DateFormat('dd MMM yyyy').format(DateTime.now()),
+                        "tanggal": DateFormat('dd MMM yyyy')
+                            .format(hasilTransfer.tanggal),
                       });
                     });
                   }
                 }),
-                menuItem(Icons.payment, "Pembayaran", () async {
-                  final hasilTambahSaldo = await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const TambahSaldoPage()),
-                  );
-
-                  if (hasilTambahSaldo != null && hasilTambahSaldo is int) {
-                    setState(() {
-                      saldo += hasilTambahSaldo; 
-                      riwayatTransaksi.insert(0, {
-                        "judul": "Tambah Saldo",
-                        "namaPenerima": "Top Up",
-                        "nominal": "+ ${formatRupiah(hasilTambahSaldo)}",
-                        "status": "Berhasil",
-                        "tanggal":
-                            DateFormat('dd MMM yyyy').format(DateTime.now()),
-                      });
-                    });
-                  }
-                }),
-                menuItem(Icons.info_outline, "Informasi", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const InformasiPage()),
-                  );
-                }),
-                menuItem(Icons.settings, "Pengaturan", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const PengaturanPage()),
-                  );
-                }),
+                menuItem(Icons.payment, "Pembayaran", () async {}),
+                menuItem(Icons.info_outline, "Informasi", () {}),
+                menuItem(Icons.settings, "Pengaturan", () {}),
                 menuItem(Icons.more_horiz, "Lainnya", () {}),
               ],
             ),
           ),
         ],
       ),
-
-      // ---------- Footer ----------
       bottomNavigationBar: Container(
         height: 50,
         color: const Color(0xFF1E40AF),
