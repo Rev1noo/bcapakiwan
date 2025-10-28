@@ -3,28 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class TransferPage extends StatefulWidget {
-  final int saldoAwal;
+  final int saldo;
 
-  const TransferPage({super.key, required this.saldoAwal});
+  const TransferPage({super.key, required this.saldo});
 
   @override
   State<TransferPage> createState() => _TransferPageState();
 }
 
 class _TransferPageState extends State<TransferPage> {
-  late int saldo;
-
   final _formKey = GlobalKey<FormState>();
+
   final TextEditingController rekeningController = TextEditingController();
   final TextEditingController namaPenerimaController = TextEditingController();
   final TextEditingController nominalController = TextEditingController();
   final TextEditingController catatanController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    saldo = widget.saldoAwal;
-  }
 
   @override
   void dispose() {
@@ -35,18 +28,19 @@ class _TransferPageState extends State<TransferPage> {
     super.dispose();
   }
 
-  void _kirim() async {
+  void _kirim() {
     if (_formKey.currentState!.validate()) {
       final nominal = int.parse(nominalController.text);
 
-      if (nominal > saldo) {
+      if (nominal > widget.saldo) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Saldo tidak mencukupi!")),
         );
         return;
       }
 
-      final result = await Navigator.push(
+      // Kirim ke halaman transfer berhasil
+      Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => HalamanTransferBerhasil(
@@ -59,12 +53,11 @@ class _TransferPageState extends State<TransferPage> {
             ),
           ),
         ),
-      );
-      if (result != null) {
-        setState(() {
-          saldo -= nominal;
-        });
-      }
+      ).then((hasil) {
+        if (hasil != null) {
+          Navigator.pop(context, hasil); // kirim balik ke beranda
+        }
+      });
     }
   }
 
@@ -73,7 +66,14 @@ class _TransferPageState extends State<TransferPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF1F5BA3),
-        title: const Text('Transfer', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Transfer',
+          style: TextStyle(color: Colors.white),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(18),
@@ -81,8 +81,6 @@ class _TransferPageState extends State<TransferPage> {
           key: _formKey,
           child: Column(
             children: [
-              Text("Saldo saat ini: Rp $saldo"),
-              const SizedBox(height: 10),
               TextFormField(
                 controller: rekeningController,
                 keyboardType: TextInputType.number,
@@ -121,9 +119,10 @@ class _TransferPageState extends State<TransferPage> {
                 onPressed: _kirim,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF1F5BA3),
-                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
                 ),
-                child: const Text("Kirim"),
+                child: const Text('Kirim',  style: TextStyle(color: Colors.white),),
               ),
             ],
           ),

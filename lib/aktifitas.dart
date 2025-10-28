@@ -10,7 +10,14 @@ class AktifitasPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF1E40AF),
-        title: const Text("Riwayat Aktifitas"),
+        title: const Text(
+          "Riwayat Aktifitas",
+          style: TextStyle(color: Colors.white),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: transaksiList.isEmpty
           ? const Center(
@@ -21,8 +28,8 @@ class AktifitasPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final transaksi = transaksiList[index];
                 return ListTile(
-                  leading: const Icon(Icons.swap_horiz,
-                      color: Color(0xFF1E40AF)),
+                  leading:
+                      const Icon(Icons.swap_horiz, color: Color(0xFF1E40AF)),
                   title: Text(transaksi["judul"] ?? ""),
                   subtitle: Text(
                       "${transaksi["namaPenerima"]} • ${transaksi["tanggal"]}"),
@@ -36,6 +43,25 @@ class AktifitasPage extends StatelessWidget {
                 );
               },
             ),
+             bottomNavigationBar: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          height: 50,
+          color: const Color(0xFF1E4C92),
+          alignment: Alignment.center,
+          child: const Text(
+            "© Appdef 2729",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
+

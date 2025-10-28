@@ -1,112 +1,131 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-void main() {
-  runApp(const MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: PengaturanPage(),
-  ));
+class PengaturanPage extends StatefulWidget {
+  const PengaturanPage({super.key});
+
+  @override
+  State<PengaturanPage> createState() => _PengaturanPageState();
 }
 
-class PengaturanPage extends StatelessWidget {
-  const PengaturanPage({super.key});
+class _PengaturanPageState extends State<PengaturanPage> {
+  List<BluetoothDevice> perangkatDitemukan = [];
+  bool sedangScan = false;
+  BluetoothDevice? perangkatTersambung;
+
+  @override
+  void initState() {
+    super.initState();
+    // Tidak langsung scan, scan hanya ketika tombol ditekan
+    _mintaIzin(); 
+  }
+
+  // 🧩 Minta izin Bluetooth & lokasi
+  Future<void> _mintaIzin() async {
+    await Permission.bluetoothScan.request();
+    await Permission.bluetoothConnect.request();
+    await Permission.location.request();
+  }
+
+  // 🔍 Scan perangkat Bluetooth di sekitar
+  Future<void> _scanPerangkat() async {
+    if (sedangScan) return;
+
+    setState(() {
+      perangkatDitemukan.clear();
+      sedangScan = true;
+    });
+
+    try {
+      // Mulai scan
+      await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
+
+      // Dengarkan hasil scan
+      FlutterBluePlus.scanResults.listen((results) {
+        if (!mounted) return;
+        for (ScanResult r in results) {
+          if (!perangkatDitemukan.contains(r.device)) {
+            setState(() {
+              perangkatDitemukan.add(r.device);
+            });
+          }
+        }
+      });
+
+      // Hentikan scan otomatis setelah 5 detik
+      await Future.delayed(const Duration(seconds: 5));
+      await FlutterBluePlus.stopScan();
+    } catch (e) {
+      print('Error scan: $e');
+    }
+
+    if (mounted) {
+      setState(() {
+        sedangScan = false;
+      });
+    }
+  }
+
+  // 🔌 Sambungkan ke perangkat
+  Future<void> _sambungkan(BluetoothDevice device) async {
+    try {
+      await device.connect(
+        autoConnect: false,
+        timeout: const Duration(seconds: 10),
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        perangkatTersambung = device;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Berhasil tersambung ke ${device.platformName}'),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal menyambungkan: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-          ),
-          child: AppBar(
-            backgroundColor: const Color(0xFF1E4C92),
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            title: const Text(
-              "Pengaturan",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-      ),
-
-      // Bagian body
+      appBar: AppBar(title: const Text('Pengaturan Bluetooth')),
       body: Column(
         children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: IconButton(
-              icon: const Icon(Icons.refresh_sharp),
-              color: Colors.blue[900],
-              onPressed: () {},
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: ElevatedButton(
+              onPressed: sedangScan ? null : _scanPerangkat,
+              child: Text(sedangScan ? 'Memindai...' : 'Scan Perangkat'),
             ),
           ),
-          const Divider(thickness: 1),
-
-          // List Printer
           Expanded(
-            child: ListView(
-              children: [
-                _printerItem("85948594589458"),
-                _printerItem("69486946849864"),
-              ],
+            child: ListView.builder(
+              itemCount: perangkatDitemukan.length,
+              itemBuilder: (context, index) {
+                final device = perangkatDitemukan[index];
+                return ListTile(
+                  title: Text(device.platformName.isNotEmpty
+                      ? device.platformName
+                      : 'Perangkat Tanpa Nama'),
+                  subtitle: Text(device.remoteId.str),
+                  trailing: ElevatedButton(
+                    onPressed: () => _sambungkan(device),
+                    child: const Text('Sambungkan'),
+                  ),
+                );
+              },
             ),
           ),
         ],
-      ),
-
-      // Bagian bottomNavigationBar pindah ke sini
-      bottomNavigationBar: ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          height: 50,
-          color: const Color(0xFF1E4C92),
-          alignment: Alignment.center,
-          child: const Text(
-            "© Appdef 2729",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Widget untuk item printer
-  Widget _printerItem(String idPrinter) {
-    return ListTile(
-      leading: const CircleAvatar(
-        backgroundColor: Colors.grey,
-        child: Icon(Icons.print, color: Colors.white),
-      ),
-      title: const Text("Printer"),
-      subtitle: Text(idPrinter),
-      trailing: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue[900],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        onPressed: () {
-          // logika sambungkan ke printer
-        },
-        child: const Text(
-          "Sambungkan",
-          style: TextStyle(color: Colors.white),
-        ),
       ),
     );
   }

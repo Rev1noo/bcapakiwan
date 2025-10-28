@@ -1,5 +1,7 @@
-import 'package:aplikasibca/main.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 // ✅ Data transfer dikirim dari halaman Transfer
 class TransferData {
@@ -18,7 +20,6 @@ class TransferData {
   });
 }
 
-// ✅ Halaman Transfer Berhasil (Stateful)
 class HalamanTransferBerhasil extends StatefulWidget {
   final TransferData data;
 
@@ -35,7 +36,59 @@ class _HalamanTransferBerhasilState extends State<HalamanTransferBerhasil> {
   @override
   void initState() {
     super.initState();
-    transferData = widget.data; // inisialisasi data
+    transferData = widget.data;
+  }
+
+  // ✅ Fungsi untuk format tanggal & nominal
+  String formatRupiah(int nominal) {
+    final formatCurrency =
+        NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
+    return formatCurrency.format(nominal);
+  }
+
+  String formatTanggal(DateTime tanggal) {
+    return DateFormat('dd MMMM yyyy, HH:mm', 'id_ID').format(tanggal);
+  }
+
+  // ✅ Fungsi untuk cetak PDF (struk)
+  Future<void> cetakStruk() async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Center(
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Center(
+                  child: pw.Text(
+                    'Bukti Transfer',
+                    style: pw.TextStyle(
+                      fontSize: 20,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
+                ),
+                pw.SizedBox(height: 20),
+                pw.Text('Tanggal: ${formatTanggal(transferData.tanggal)}'),
+                pw.Text('Nama Penerima: ${transferData.namaPenerima}'),
+                pw.Text('Rekening Tujuan: ${transferData.rekeningTujuan}'),
+                pw.Text('Nominal: ${formatRupiah(transferData.nominal)}'),
+                if (transferData.catatan.isNotEmpty)
+                  pw.Text('Catatan: ${transferData.catatan}'),
+                pw.Divider(),
+                pw.Center(
+                  child: pw.Text('Terima kasih telah menggunakan layanan kami'),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+
+    await Printing.layoutPdf(onLayout: (format) => pdf.save());
   }
 
   @override
@@ -43,95 +96,143 @@ class _HalamanTransferBerhasilState extends State<HalamanTransferBerhasil> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        automaticallyImplyLeading:
-            false, // supaya tidak ada tombol back default
+        automaticallyImplyLeading: false,
         backgroundColor: const Color(0xFF1F5BA3),
         title: const Text(
           "Transfer Berhasil",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(height: 30),
             const Icon(Icons.check_circle, size: 100, color: Colors.green),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
             const Text(
               "Transfer Berhasil!",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
             const SizedBox(height: 20),
 
-            // ✅ Detail transaksi
+            // ✅ Card detail modern
             Card(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(16),
               ),
-              elevation: 3,
+              elevation: 5,
+              shadowColor: Colors.black26,
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildRow("Rekening Tujuan", transferData.rekeningTujuan),
                     _buildRow("Nama Penerima", transferData.namaPenerima),
-                    _buildRow("Nominal", "Rp ${transferData.nominal}"),
+                    _buildRow("Rekening Tujuan", transferData.rekeningTujuan),
+                    _buildRow("Nominal", formatRupiah(transferData.nominal)),
                     if (transferData.catatan.isNotEmpty)
                       _buildRow("Catatan", transferData.catatan),
-                    _buildRow("Tanggal", "${transferData.tanggal}"),
+                    _buildRow("Tanggal", formatTanggal(transferData.tanggal)),
                   ],
                 ),
               ),
             ),
 
-            const SizedBox(height: 30),
+            const Spacer(),
 
-            // ✅ Tombol kembali ke halaman utama
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        const MyHomePage(), // ✅ pakai HomePage, bukan BerandaPage
+            // ✅ Tombol Aksi (Print & Kembali)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.print, color: Colors.white),
+                  label: const Text("Print Struk",
+                      style: TextStyle(color: Colors.white)),
+                  onPressed: cetakStruk,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 25, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  (route) => false, // hapus semua halaman sebelumnya
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1F5BA3),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
                 ),
-              ),
-              child: const Text(
-                "Kembali ke Beranda",
-                style: TextStyle(fontSize: 16, color: Colors.white),
-              ),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.home, color: Colors.white),
+                  label: const Text("Kembali",
+                      style: TextStyle(color: Colors.white)),
+                  onPressed: () {
+                    Navigator.pop(context, {
+                      'namaPenerima': transferData.namaPenerima,
+                      'nominal': transferData.nominal,
+                      'tanggal': formatTanggal(transferData.tanggal),
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1F5BA3),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 25, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          height: 50,
+          color: const Color(0xFF1E4C92),
+          alignment: Alignment.center,
+          child: const Text(
+            "© Appdef 2729",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
     );
   }
 
-  // ✅ widget untuk menampilkan detail
   Widget _buildRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label,
-              style: const TextStyle(fontSize: 16, color: Colors.black54)),
-          Text(value,
-              style:
-                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w500)),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+          ),
         ],
       ),
     );

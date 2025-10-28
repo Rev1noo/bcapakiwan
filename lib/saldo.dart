@@ -26,7 +26,7 @@ class _TambahSaldoPageState extends State<TambahSaldoPage> {
       final input = int.tryParse(_controller.text);
       if (input != _selectedNominal) {
         setState(() {
-          _selectedNominal = null; 
+          _selectedNominal = null;
         });
       }
     });
@@ -45,79 +45,111 @@ class _TambahSaldoPageState extends State<TambahSaldoPage> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("Nominal", style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                hintText: "Masukkan Nominal",
-                filled: true,
-                fillColor: Colors.grey.shade300,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Nominal",
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 20),
-            const Text("Pilihan Cepat",
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                _quickButton("Rp10.000", 10000),
-                const SizedBox(width: 8),
-                _quickButton("Rp50.000", 50000),
-                const SizedBox(width: 8),
-                _quickButton("Rp100.000", 100000),
-              ],
-            ),
-            const SizedBox(height: 20),
-            const Text("Metode Pembayaran",
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.grey.shade300,
-              ),
-              hint: const Text("Pilih Metode Pembayaran"),
-              items: const [
-                DropdownMenuItem(value: "Cash", child: Text("Cash")),
-                DropdownMenuItem(
-                    value: "Transfer Bank", child: Text("Transfer Bank")),
-                DropdownMenuItem(value: "E-Wallet", child: Text("E-Wallet")),
-              ],
-              onChanged: (value) => metodePembayaran = value,
-            ),
-            const Spacer(),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1E3C88),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  hintText: "Masukkan Nominal",
+                  filled: true,
+                  fillColor: Colors.grey.shade300,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                onPressed: () {
-                  final input = int.tryParse(_controller.text);
-                  if (input != null && input > 0) {
-                    Navigator.pop(context, input);
-                  }
-                },
-                child: const Text("Tambah Saldo",
-                    style: TextStyle(color: Colors.white)),
+                keyboardType: TextInputType.number,
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              const Text(
+                "Pilihan Cepat",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+
+              // Bungkus Row dengan SingleChildScrollView agar bisa geser horizontal
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _quickButton("Rp10.000", 10000),
+                    const SizedBox(width: 8),
+                    _quickButton("Rp50.000", 50000),
+                    const SizedBox(width: 8),
+                    _quickButton("Rp100.000", 100000),
+                    const SizedBox(width: 8),
+                    _quickButton("Rp200.000", 200000),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+              const Text(
+                "Metode Pembayaran",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.grey.shade300,
+                ),
+                hint: const Text("Pilih Metode Pembayaran"),
+                items: const [
+                  DropdownMenuItem(value: "Cash", child: Text("Cash")),
+                  DropdownMenuItem(
+                      value: "Transfer Bank", child: Text("Transfer Bank")),
+                  DropdownMenuItem(value: "E-Wallet", child: Text("E-Wallet")),
+                ],
+                onChanged: (value) => metodePembayaran = value,
+              ),
+
+              const SizedBox(height: 30),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1E3C88),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  onPressed: () {
+                    final input = int.tryParse(_controller.text);
+                    if (input != null &&
+                        input > 0 &&
+                        metodePembayaran != null) {
+                      Navigator.pop(context, {
+                        "nominal": input,
+                        "metode": metodePembayaran,
+                      });
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content:
+                              Text("Isi nominal dan pilih metode pembayaran!"),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text(
+                    "Tambah Saldo",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: ClipRRect(

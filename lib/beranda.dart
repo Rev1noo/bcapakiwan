@@ -1,12 +1,16 @@
 import 'package:aplikasibca/saldo.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:aplikasibca/pembayaran_berhasil.dart';
-import 'package:aplikasibca/transfer.dart';
+import 'transfer.dart';
 import 'aktifitas.dart';
+import 'informarsi.dart';
+import 'pengaturan.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // penting
+  await initializeDateFormatting('id_ID'); // inisialisasi locale Indonesia
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -48,107 +52,157 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const SizedBox(height: 50),
-          const Text(
-            "Jane Doe",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            "Rekening: 123 - 456 - 7890",
-            style: TextStyle(color: Colors.black54),
-          ),
-          const SizedBox(height: 20),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E40AF),
-              borderRadius: BorderRadius.circular(16),
-            ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 10),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 20),
+
+                // Nama pengguna & No rekening
                 const Text(
-                  "Saldo Aktif",
-                  style: TextStyle(color: Colors.white70, fontSize: 16),
+                  "Jane Doe",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  formatRupiah(saldo),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(height: 4),
+                const Text(
+                  "Rekening: 123 - 456 - 7890",
+                  style: TextStyle(color: Colors.black54),
+                ),
+
+                const SizedBox(height: 20),
+
+                // ---------- Kotak Saldo ----------
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E40AF),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Saldo Aktif",
+                        style: TextStyle(color: Colors.white70, fontSize: 16),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        formatRupiah(saldo),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // ---------- Menu ----------
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: GridView.count(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    crossAxisCount: 3,
+                    children: [
+                      menuItem(Icons.history, "Aktifitas", () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                AktifitasPage(transaksiList: riwayatTransaksi),
+                          ),
+                        );
+                      }),
+                      menuItem(Icons.swap_horiz, "Transfer", () async {
+                        final hasilTransfer = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => TransferPage(saldo: saldo),
+                          ),
+                        );
+
+                        if (hasilTransfer != null && hasilTransfer is Map) {
+                          setState(() {
+                            saldo -= hasilTransfer["nominal"] as int;
+                            riwayatTransaksi.insert(0, {
+                              "judul": "Transfer",
+                              "namaPenerima": hasilTransfer["namaPenerima"],
+                              "nominal":
+                                  "- ${formatRupiah(hasilTransfer["nominal"])}",
+                              "status": "Berhasil",
+                              "tanggal": hasilTransfer["tanggal"],
+                            });
+                          });
+                        }
+                      }),
+                      menuItem(Icons.payment, "Tambah Saldo", () async {
+                        final hasilTambah = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const TambahSaldoPage()),
+                        );
+
+                        if (hasilTambah != null && hasilTambah is Map) {
+                          setState(() {
+                            saldo += hasilTambah["nominal"] as int;
+                            riwayatTransaksi.insert(0, {
+                              "judul": "Tambah Saldo",
+                              "namaPenerima": hasilTambah["metode"],
+                              "nominal":
+                                  "+ ${formatRupiah(hasilTambah["nominal"])}",
+                              "status": "Berhasil",
+                              "tanggal": DateFormat('dd MMM yyyy')
+                                  .format(DateTime.now()),
+                            });
+                          });
+                        }
+                      }),
+                      menuItem(Icons.info_outline, "Informasi", () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const InformasiPage()),
+                        );
+                      }),
+                      menuItem(Icons.settings, "Pengaturan", () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const PengaturanPage()),
+                        );
+                      }),
+                      menuItem(Icons.more_horiz, "Lainnya", () {}),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 30),
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: 3,
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 25,
-              children: [
-                menuItem(Icons.history, "Aktifitas", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          AktifitasPage(transaksiList: riwayatTransaksi),
-                    ),
-                  );
-                }),
-                menuItem(Icons.swap_horiz, "Transfer", () async {
-                  final Object? result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => TransferPage(saldoAwal: saldo),
-                    ),
-                  );
-
-                  // ✅ perbaikan: cast hasil ke TransferData
-                  if (result != null && result is TransferData) {
-                    final TransferData hasilTransfer = result;
-                    setState(() {
-                      saldo -= hasilTransfer.nominal;
-                      riwayatTransaksi.insert(0, {
-                        "judul": "Transfer",
-                        "namaPenerima": hasilTransfer.namaPenerima,
-                        "nominal": "- ${formatRupiah(hasilTransfer.nominal)}",
-                        "status": "Berhasil",
-                        "tanggal": DateFormat('dd MMM yyyy')
-                            .format(hasilTransfer.tanggal),
-                      });
-                    });
-                  }
-                }),
-                menuItem(Icons.payment, "Tambah Saldo", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const TambahSaldoPage()),
-                  );
-                }),
-                menuItem(Icons.info_outline, "Informasi", () {}),
-                menuItem(Icons.settings, "Pengaturan", () {}),
-                menuItem(Icons.more_horiz, "Lainnya", () {}),
-              ],
+        ),
+      ),
+      bottomNavigationBar: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          height: 50,
+          color: const Color(0xFF1E4C92),
+          alignment: Alignment.center,
+          child: const Text(
+            "© Appdef 2729",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
           ),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        height: 50,
-        color: const Color(0xFF1E40AF),
-        alignment: Alignment.center,
-        child: const Text(
-          "© Appdef 2729",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
     );
